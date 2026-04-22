@@ -1,0 +1,118 @@
+:root {
+  --tq-primary: #4a90d9;
+  --tq-soft: #f0f7ff;
+  --tq-green: #3dba8c;
+  --tq-muted: #6c757d;
+}
+
+body { background: #fafbfc; font-family: 'Segoe UI', sans-serif; }
+
+/* Navbar */
+.navbar-brand { font-size: 1.2rem; letter-spacing: -0.3px; }
+.nav-link { font-size: 0.9rem; }
+
+/* Hero */
+.hero-section {
+  background: linear-gradient(135deg, #e8f4fd 0%, #f0f9f4 100%);
+  border-radius: 12px;
+  padding: 3rem 2rem;
+}
+
+/* Cards */
+.card { border: 1px solid #e9ecef; border-radius: 10px; }
+.card:hover { box-shadow: 0 2px 12px rgba(0,0,0,.06); transition: box-shadow .2s; }
+
+/* Feature icons */
+.feature-icon {
+  width: 48px; height: 48px;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 10px;
+  font-size: 1.3rem;
+}
+
+/* Chat */
+.chat-window {
+  height: 420px;
+  overflow-y: auto;
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+}
+.chat-bubble {
+  max-width: 80%;
+  padding: 0.6rem 0.9rem;
+  border-radius: 14px;
+  margin-bottom: 0.5rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.bubble-user {
+  background: var(--tq-primary);
+  color: #fff;
+  margin-left: auto;
+  border-bottom-right-radius: 4px;
+}
+.bubble-bot {
+  background: #fff;
+  color: #333;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+}
+.bubble-crisis { border-left: 3px solid #dc3545; }
+.bubble-time { font-size: 0.72rem; color: #aaa; margin-bottom: 0.1rem; }
+.bot-avatar {
+  width: 28px; height: 28px;
+  background: var(--tq-primary);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff; font-size: 0.75rem;
+  flex-shrink: 0;
+}
+
+/* Typing indicator */
+.typing-dots span {
+  width: 6px; height: 6px;
+  background: #aaa;
+  border-radius: 50%;
+  display: inline-block;
+  margin: 0 1px;
+  animation: bounce 1.2s infinite;
+}
+.typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+.typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
+
+/* Mood selector */
+.mood-btn { font-size: 1.5rem; cursor: pointer; opacity: 0.6; transition: opacity .15s, transform .15s; border: none; background: none; padding: 4px; }
+.mood-btn:hover, .mood-btn.selected { opacity: 1; transform: scale(1.2); }
+
+/* Forum */
+.post-card { border-left: 3px solid var(--tq-primary); }
+.badge-cat { font-size: 0.72rem; }
+
+/* Resource card types */
+.type-badge-video { background: #fff3e0; color: #e65100; }
+.type-badge-audio { background: #e8f5e9; color: #2e7d32; }
+.type-badge-guide { background: #e3f2fd; color: #1565c0; }
+
+/* Admin */
+.stat-card { text-align: center; }
+.stat-num { font-size: 2rem; font-weight: 700; color: var(--tq-primary); }
+
+/* Helpline chip */
+.helpline-chip {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: #fff; border: 1px solid #dee2e6;
+  border-radius: 8px; padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
+}
+
+/* Crisis bar */
+.crisis-bar { font-size: 0.85rem; }
+
+/* Appointments */
+.slot-btn { font-size: 0.8rem; }
+.status-pending { color: #f0ad4e; }
+.status-confirmed { color: #3dba8c; }
+.status-cancelled { color: #dc3545; }
