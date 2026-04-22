@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}· Resources{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-collection me-2" style="color:var(--tq);"></i>Resource Hub</h4>
+  <p class="text-muted small mb-4">Guides, videos and audio in English, Hindi, Telugu and more.</p>
+  <div class="card p-3 mb-4">
+    <form method="GET" class="row g-2 align-items-end">
+      <div class="col-md-3"><label class="form-label small fw-semibold mb-1">Topic</label>
+        <select name="category" class="form-select form-select-sm">
+          <option value="">All Topics</option>
+          {% for c in categories %}<option value="{{ c }}" {% if c==selected_cat %}selected{% endif %}>{{ c }}</option>{% endfor %}
+        </select></div>
+      <div class="col-md-3"><label class="form-label small fw-semibold mb-1">Language</label>
+        <select name="lang" class="form-select form-select-sm">
+          <option value="">All Languages</option>
+          {% for l in languages %}<option value="{{ l }}" {% if l==selected_lang %}selected{% endif %}>{{ l }}</option>{% endfor %}
+        </select></div>
+      <div class="col-md-3"><label class="form-label small fw-semibold mb-1">Type</label>
+        <select name="type" class="form-select form-select-sm">
+          <option value="">All Types</option>
+          <option value="guide" {% if selected_type=='guide' %}selected{% endif %}>📖 Guide</option>
+          <option value="video" {% if selected_type=='video' %}selected{% endif %}>🎬 Video</option>
+          <option value="audio" {% if selected_type=='audio' %}selected{% endif %}>🎵 Audio</option>
+        </select></div>
+      <div class="col-md-3"><button type="submit" class="btn btn-teal btn-sm w-100">Filter</button></div>
+    </form>
+  </div>
+  {% if resources %}
+  <div class="row g-3">
+    {% for r in resources %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 p-3">
+        <div class="d-flex gap-2 mb-2">
+          <span style="font-size:1.5rem;">{% if r.resource_type=='video' %}🎬{% elif r.resource_type=='audio' %}🎵{% else %}📖{% endif %}</span>
+          <div><span class="badge badge-teal" style="font-size:.7rem;">{{ r.category }}</span>
+          <span class="badge bg-light text-muted border ms-1" style="font-size:.7rem;">{{ r.language }}</span></div>
+        </div>
+        <h6 class="fw-semibold mb-1">{{ r.title }}</h6>
+        <p class="text-muted small mb-3">{{ r.description }}</p>
+        <div class="mt-auto d-flex justify-content-between align-items-center">
+          <span class="text-muted" style="font-size:.75rem;text-transform:capitalize;">{{ r.resource_type }}</span>
+          <a href="{{ r.url }}" class="btn btn-teal btn-sm px-3">{% if r.resource_type=='video' %}Watch{% elif r.resource_type=='audio' %}Listen{% else %}Read{% endif %}</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted"><i class="bi bi-search" style="font-size:2rem;"></i>
+  <p class="mt-2">No resources found. <a href="/resources" style="color:var(--tq);">Clear filters</a></p></div>
+  {% endif %}
+</div>
+{% endblock %}

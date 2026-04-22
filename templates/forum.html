@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}· Peer Forum{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-people me-2" style="color:var(--tq);"></i>Peer Support Forum</h4>
+    <p class="text-muted small mb-0">A safe, moderated space. Be kind.</p></div>
+    {% if session.role == 'student' %}<a href="/forum/new" class="btn btn-teal px-3"><i class="bi bi-plus-lg me-1"></i>New Post</a>{% endif %}
+  </div>
+  <div class="alert py-2 px-3 mb-3" style="background:#e8f5f3;border-left:3px solid var(--tq);font-size:.85rem;">
+    <i class="bi bi-shield-check me-2" style="color:var(--tq);"></i>Forum is moderated. Counsellors may respond to posts. Crisis: <strong>9152987821</strong>
+  </div>
+  {% if posts %}
+  <div class="d-flex flex-column gap-2">
+    {% for post in posts %}
+    <div class="card p-3">
+      <div class="d-flex justify-content-between align-items-start">
+        <div class="flex-grow-1">
+          <div class="d-flex gap-2 mb-1 flex-wrap">
+            <span class="badge badge-teal" style="font-size:.7rem;">{{ post.category }}</span>
+            {% if post.anonymous %}<span class="badge bg-light text-muted border" style="font-size:.7rem;"><i class="bi bi-incognito me-1"></i>Anonymous</span>
+            {% else %}<span class="text-muted" style="font-size:.75rem;"><i class="bi bi-person me-1"></i>{{ post.username }}</span>{% endif %}
+            <span class="text-muted" style="font-size:.75rem;"><i class="bi bi-clock me-1"></i>{{ post.created_at[:16] }}</span>
+          </div>
+          <h6 class="fw-semibold mb-1"><a href="/forum/post/{{ post.id }}" class="text-decoration-none" style="color:#1d3557;">{{ post.title }}</a></h6>
+          <p class="text-muted small mb-0">{{ post.content[:150] }}{% if post.content|length > 150 %}...{% endif %}</p>
+        </div>
+        <div class="text-end ms-3 flex-shrink-0">
+          <span class="text-muted small"><i class="bi bi-chat me-1"></i>{{ post.reply_count }}</span><br>
+          <a href="/forum/post/{{ post.id }}" class="btn btn-outline-secondary btn-sm mt-1 px-2 py-0" style="font-size:.75rem;">View</a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-5 text-muted">
+    <i class="bi bi-chat-square-heart" style="font-size:2.5rem;opacity:.4;"></i>
+    <p class="mt-3">No posts yet.</p>
+    {% if session.role=='student' %}<a href="/forum/new" class="btn btn-teal px-4">Create First Post</a>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

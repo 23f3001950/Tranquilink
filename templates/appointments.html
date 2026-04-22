@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}· Book Appointment{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-calendar-check me-2" style="color:var(--tq);"></i>Book a Counsellor</h4>
+  <p class="text-muted small mb-4">All appointments are strictly confidential. Anonymous booking available.</p>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card p-4">
+        <h6 class="fw-semibold mb-3">Request an Appointment</h6>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Counsellor</label>
+            <select name="counsellor_id" class="form-select" required>
+              <option value="">Select counsellor</option>
+              {% for c in counsellors %}
+              <option value="{{ c.id }}">{{ c.full_name }} — {{ c.specialisation }}</option>
+              {% endfor %}
+              <option value="">Any Available Counsellor</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Preferred Date</label>
+            <input type="date" name="preferred_date" class="form-control" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Preferred Time</label>
+            <select name="preferred_time" class="form-select" required>
+              <option value="">Select time</option>
+              {% for t in ['09:00 AM','10:00 AM','11:00 AM','02:00 PM','03:00 PM','04:00 PM','05:00 PM'] %}
+              <option>{{ t }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Reason <span class="text-muted fw-normal">(optional, confidential)</span></label>
+            <textarea name="reason" class="form-control" rows="3" placeholder="e.g. academic stress, anxiety..."></textarea>
+          </div>
+          <div class="form-check mb-3">
+            <input type="checkbox" class="form-check-input" name="anonymous" id="anon">
+            <label class="form-check-label small" for="anon"><i class="bi bi-incognito me-1"></i>Book anonymously</label>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2">Request Appointment</button>
+        </form>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card p-3 mb-3">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-telephone me-2" style="color:var(--tq);"></i>Crisis Helplines</h6>
+        {% for name,num,hrs in [('iCall (TISS)','9152987821','Mon–Sat, 8am–10pm'),('Vandrevala Foundation','1860-2662-345','24/7'),('Snehi','044-24640050','24/7'),('NIMHANS','080-46110007','24/7')] %}
+        <div class="d-flex justify-content-between align-items-center p-2 rounded mb-1" style="background:#f8fafb;">
+          <div><div class="fw-semibold" style="font-size:.85rem;">{{ name }}</div><div class="text-muted" style="font-size:.75rem;">{{ hrs }}</div></div>
+          <span class="badge badge-teal px-2 py-1" style="font-size:.8rem;">{{ num }}</span>
+        </div>
+        {% endfor %}
+      </div>
+      <div class="card p-3" style="background:#e8f5f3;border-color:#c0e8e4;">
+        <p class="small mb-1"><i class="bi bi-shield-lock me-2" style="color:var(--tq);"></i><strong>Your Privacy Matters</strong></p>
+        <p class="text-muted small mb-0">Sessions are governed by professional ethics. Information is only shared with your consent or in life-threatening situations.</p>
+      </div>
+    </div>
+  </div>
+  {% if appointments %}
+  <div class="card p-3 mt-4">
+    <h6 class="fw-semibold mb-3"><i class="bi bi-clock-history me-2" style="color:var(--tq);"></i>Your Appointments</h6>
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>Counsellor</th><th>Date</th><th>Time</th><th>Status</th><th>Review</th></tr></thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            
+            <td style="font-size:.85rem;">{{ a.c_name or a.counsellor_name or '—' }}</td>
+            <td style="font-size:.85rem;">{{ a.preferred_date }}</td>
+            <td style="font-size:.85rem;">{{ a.preferred_time }}</td>
+            <td>{% if a.status=='pending' %}<span class="badge bg-warning text-dark">Pending</span>
+                {% elif a.status=='confirmed' %}<span class="badge bg-success">Confirmed</span>
+                {% elif a.status=='completed' %}<span class="badge bg-secondary">Completed</span>
+                {% else %}<span class="badge bg-danger">{{ a.status|capitalize }}</span>{% endif %}</td>
+            <td>{% if a.status=='completed' and a.counsellor_id %}
+              <a href="/counsellor/{{ a.counsellor_id }}/review" class="btn btn-sm badge-teal px-2 py-0" style="font-size:.75rem;"><i class="bi bi-star me-1"></i>Review</a>
+              {% else %}—{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

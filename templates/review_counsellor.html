@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}· Review Counsellor{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:550px;">
+  <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-star me-2" style="color:#e9c46a;"></i>Review Your Counsellor</h4>
+  <div class="card p-3 mb-4" style="background:var(--tq-light);">
+    <div class="d-flex gap-3 align-items-center">
+      <div style="font-size:2rem;">🩺</div>
+      <div>
+        <div class="fw-semibold">{{ counsellor.full_name }}</div>
+        <div class="text-muted small">{{ counsellor.specialisation }}</div>
+      </div>
+    </div>
+  </div>
+  <div class="card p-4">
+    <form method="POST">
+      {% if appointments %}
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Session (optional)</label>
+        <select name="appointment_id" class="form-select form-select-sm">
+          <option value="">General review</option>
+          {% for a in appointments %}
+          <option value="{{ a.id }}">Session on {{ a.preferred_date }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      {% else %}
+      <input type="hidden" name="appointment_id" value="">
+      {% endif %}
+      <div class="mb-3">
+        <label class="form-label small fw-semibold">Rating</label>
+        <div class="d-flex gap-2">
+          {% for i in range(1,6) %}
+          <div>
+            <input type="radio" class="btn-check" name="rating" id="r{{ i }}" value="{{ i }}" required>
+            <label class="btn btn-outline-secondary" for="r{{ i }}" style="font-size:1.3rem;padding:.3rem .6rem;">{{ '⭐' * i }}</label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label small fw-semibold">Your Review <span class="text-muted fw-normal">(optional)</span></label>
+        <textarea name="review_text" class="form-control" rows="4" placeholder="How was your experience? What helped you?"></textarea>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-teal px-4">Submit Review</button>
+        <a href="/appointments" class="btn btn-outline-secondary px-4">Cancel</a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

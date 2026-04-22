@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% block title %}· Admin Dashboard{% endblock %}
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+{% endblock %}
+{% block content %}
+<div class="container-fluid py-4 px-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div><h4 class="fw-bold mb-0" style="color:#1d3557;"><i class="bi bi-bar-chart me-2" style="color:var(--tq);"></i>Admin Analytics</h4>
+    <p class="text-muted small mb-0">Anonymous data for trend analysis and intervention planning</p></div>
+    <span class="badge badge-teal px-3 py-2"><i class="bi bi-shield-lock me-1"></i>Anonymised</span>
+  </div>
+
+  <div class="row g-3 mb-4">
+    {% for icon,label,val,color in [
+      ('bi-people','Students',stats.total_students,'#2a9d8f'),
+      ('bi-person-badge','Counsellors',stats.total_counsellors,'#1d3557'),
+      ('bi-clock','Pending Appts',stats.pending_appointments,'#e9c46a'),
+      ('bi-chat-square','Forum Posts',stats.total_posts,'#6c757d'),
+      ('bi-robot','AI Chat Users',stats.chat_sessions,'#2a9d8f'),
+      ('bi-exclamation-circle','Open Emergencies',stats.emergencies_open,'#e76f51'),
+    ] %}
+    <div class="col-md-4 col-lg-2">
+      <div class="card p-3 text-center">
+        <i class="bi {{ icon }} mb-1" style="font-size:1.5rem;color:{{ color }};"></i>
+        <div class="fw-bold fs-4">{{ val }}</div>
+        <div class="text-muted" style="font-size:.75rem;">{{ label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  {% if pending_counsellors %}
+  <div class="card p-3 mb-4" style="border-color:#e9c46a;background:#fffdf0;">
+    <h6 class="fw-semibold mb-3"><i class="bi bi-person-badge me-2" style="color:#e9c46a;"></i>Pending Counsellor Approvals ({{ pending_counsellors|length }})</h6>
+    <div class="row g-2">
+      {% for c in pending_counsellors %}
+      <div class="col-md-6">
+        <div class="card p-2">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold small">{{ c.full_name }}</div>
+              <div class="text-muted" style="font-size:.75rem;">{{ c.email }}</div>
+              <div class="text-muted" style="font-size:.75rem;">{{ c.specialisation }} · {{ c.qualification }}</div>
+            </div>
+            <div class="d-flex gap-1">
+              <form method="POST" action="/admin/counsellor/{{ c.id }}/approve">
+                <button type="submit" class="btn btn-success btn-sm px-2 py-1" style="font-size:.75rem;">Approve</button>
+              </form>
+              <form method="POST" action="/admin/counsellor/{{ c.id }}/reject">
+                <button type="submit" class="btn btn-outline-danger btn-sm px-2 py-1" style="font-size:.75rem;">Reject</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-5"><div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-3"><i class="bi bi-emoji-smile me-2" style="color:var(--tq);"></i>Mood Distribution</h6>
+      <canvas id="moodChart" height="180"></canvas>
+    </div></div>
+    <div class="col-md-4"><div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-3"><i class="bi bi-pie-chart me-2" style="color:var(--tq);"></i>Forum Topics</h6>
+      <canvas id="catChart" height="180"></canvas>
+    </div></div>
+    <div class="col-md-3"><div class="card p-3 h-100">
+      <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up me-2" style="color:var(--tq);"></i>Avg Mood (7 Days)</h6>
+      <canvas id="trendChart" height="180"></canvas>
+    </div></div>
+  </div>
+
+  <div class="card p-3 mb-4">
+    <div class="d-flex justify-content-between mb-3">
+      <h6 class="fw-semibold mb-0"><i class="bi bi-calendar me-2" style="color:var(--tq);"></i>Recent Appointments</h6>
+      <a href="/admin/campaigns" class="btn btn-teal btn-sm px-3">Manage Campaigns</a>
+    </div>
+    {% if appointments %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>Student</th><th>Counsellor</th><th>Date</th><th>Reason</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td style="font-size:.82rem;">{{ a.dname }}</td>
+            <td style="font-size:.82rem;">{{ a.cname }}</td>
+            <td style="font-size:.82rem;">{{ a.preferred_date }}</td>
+            <td style="font-size:.82rem;">{{ (a.reason or '—')[:25] }}</td>
+            <td>{% if a.status=='pending' %}<span class="badge bg-warning text-dark">Pending</span>
+                {% elif a.status=='confirmed' %}<span class="badge bg-success">Confirmed</span>
+                {% elif a.status=='completed' %}<span class="badge bg-secondary">Completed</span>
+                {% else %}<span class="badge bg-danger">{{ a.status|capitalize }}</span>{% endif %}</td>
+            <td>
+              <form method="POST" action="/admin/appointment/{{ a.id }}/update" class="d-flex gap-1">
+                <select name="status" class="form-select form-select-sm" style="font-size:.75rem;width:auto;">
+                  <option value="pending">Pending</option><option value="confirmed">Confirmed</option>
+                  <option value="completed">Completed</option><option value="cancelled">Cancelled</option>
+                </select>
+                <button type="submit" class="btn btn-teal btn-sm px-2" style="font-size:.75rem;">Update</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="text-muted small mb-0">No appointments yet.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+  const tq='#2a9d8f';
+  const moodData={{ mood_data|tojson }};
+  const emojis={1:'😔 Very Low',2:'😕 Low',3:'😐 Okay',4:'🙂 Good',5:'😊 Great'};
+  new Chart(document.getElementById('moodChart'),{type:'bar',data:{labels:moodData.map(d=>emojis[d.mood]||d.mood),datasets:[{label:'Students',data:moodData.map(d=>d.cnt),backgroundColor:['#e76f51','#f4a261','#e9c46a','#2a9d8f','#264653'],borderRadius:6}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{stepSize:1}}}}});
+  const catData={{ cat_data|tojson }};
+  new Chart(document.getElementById('catChart'),{type:'doughnut',data:{labels:catData.map(d=>d.category),datasets:[{data:catData.map(d=>d.cnt),backgroundColor:['#2a9d8f','#264653','#e9c46a','#f4a261','#e76f51','#6c757d','#adb5bd']}]},options:{plugins:{legend:{position:'bottom',labels:{font:{size:10}}}},cutout:'55%'}});
+  const wData={{ weekly|tojson }};
+  new Chart(document.getElementById('trendChart'),{type:'line',data:{labels:wData.map(d=>d.day?d.day.slice(5):'').reverse(),datasets:[{label:'Avg Mood',data:wData.map(d=>parseFloat(d.avg_mood||0).toFixed(1)).reverse(),borderColor:tq,backgroundColor:'#e8f5f3',fill:true,tension:0.4,pointRadius:4}]},options:{plugins:{legend:{display:false}},scales:{y:{min:1,max:5,ticks:{stepSize:1}}}}});
+</script>
+{% endblock %}

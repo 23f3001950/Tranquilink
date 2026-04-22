@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}· Counsellor Registration{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="row justify-content-center">
+    <div class="col-md-7">
+      <div class="card p-4">
+        <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-person-badge me-2" style="color:var(--tq);"></i>Counsellor Registration</h4>
+        <p class="text-muted small mb-1">Register with your professional credentials. Your account will be reviewed and approved by the admin before activation.</p>
+        <div class="alert py-2 px-3 mb-4" style="background:#e8f5f3;border-left:3px solid var(--tq);font-size:.85rem;">
+          <i class="bi bi-shield-check me-2" style="color:var(--tq);"></i>All credentials are verified before approval. Please provide accurate professional information.
+        </div>
+        <form method="POST">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Full Name</label>
+              <input type="text" name="full_name" class="form-control" required placeholder="Dr. / Mr. / Ms. Full Name">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Professional Email</label>
+              <input type="email" name="email" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Password</label>
+              <input type="password" name="password" class="form-control" required minlength="8">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Phone</label>
+              <input type="text" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX">
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Specialisation</label>
+              <select name="specialisation" class="form-select" required>
+                <option value="">Select specialisation</option>
+                {% for s in ['Clinical Psychology','Counselling Psychology','Psychiatry','Child & Adolescent Mental Health','Trauma & PTSD','Academic Stress & Anxiety','General Mental Wellness'] %}
+                <option>{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label small fw-semibold">Qualification</label>
+              <input type="text" name="qualification" class="form-control" required placeholder="e.g. M.Phil Clinical Psychology, RCI Registered">
+            </div>
+            <div class="col-12">
+              <label class="form-label small fw-semibold">Short Bio <span class="text-muted fw-normal">(shown to students)</span></label>
+              <textarea name="bio" class="form-control" rows="3" placeholder="Brief professional background, approach, and areas of focus..."></textarea>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2 mt-4">Submit for Approval</button>
+        </form>
+        <p class="text-center text-muted small mt-3 mb-0">Already registered? <a href="/login" style="color:var(--tq);">Login as counsellor</a></p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

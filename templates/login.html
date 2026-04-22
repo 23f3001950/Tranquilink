@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block title %}· Login{% endblock %}
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-5">
+      <div class="card p-4">
+        <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-heart-pulse me-2" style="color:var(--tq);"></i>Welcome Back</h4>
+        <p class="text-muted small mb-4">Login to access your wellness dashboard</p>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Login as</label>
+            <div class="d-flex gap-2">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="login_as" id="r_student" value="student" checked>
+                <label class="form-check-label small" for="r_student">Student / Admin</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="login_as" id="r_counsellor" value="counsellor">
+                <label class="form-check-label small" for="r_counsellor">Counsellor</label>
+              </div>
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Email</label>
+            <input type="email" name="email" class="form-control" required placeholder="your@email.com">
+          </div>
+          <div class="mb-4">
+            <label class="form-label small fw-semibold">Password</label>
+            <input type="password" name="password" class="form-control" required>
+          </div>
+          <button type="submit" class="btn btn-teal w-100 py-2">Login</button>
+        </form>
+        <hr class="my-3">
+        <p class="text-center text-muted small mb-1">Student? <a href="/register" style="color:var(--tq);">Create account</a></p>
+        <p class="text-center text-muted small mb-0">Counsellor? <a href="/counsellor/register" style="color:var(--tq);">Register credentials</a></p>
+        <p class="text-center mt-2 small text-muted"><strong>Admin demo:</strong> admin@tranquilink.in / admin123</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

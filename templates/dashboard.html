@@ -1,0 +1,131 @@
+{% extends "base.html" %}
+{% block title %}· Dashboard{% endblock %}
+{% block content %}
+<div class="container py-4">
+  {% if session.role == 'admin' %}
+  <div class="text-center py-5">
+    <i class="bi bi-bar-chart-fill" style="font-size:3rem;color:var(--tq);"></i>
+    <h5 class="fw-bold mt-3" style="color:#1d3557;">Admin Panel</h5>
+    <div class="d-flex gap-2 justify-content-center mt-3">
+      <a href="/admin" class="btn btn-teal px-4">Analytics Dashboard</a>
+      <a href="/admin/campaigns" class="btn btn-outline-secondary px-4">Campaigns</a>
+    </div>
+  </div>
+  {% elif session.role == 'counsellor' %}
+  <script>window.location='/counsellor/dashboard'</script>
+  {% else %}
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-0" style="color:#1d3557;">Hello, {{ session.username }} 👋</h4>
+      <p class="text-muted small mb-0">How are you feeling today?</p>
+    </div>
+    <span class="badge badge-teal px-3 py-2">Student</span>
+  </div>
+
+  <div class="card p-4 mb-4">
+    <h6 class="fw-semibold mb-3"><i class="bi bi-emoji-smile me-2" style="color:var(--tq);"></i>Log Today's Mood</h6>
+    <form method="POST" action="/mood">
+      <div class="mb-3">
+        <div class="d-flex gap-2 flex-wrap">
+          {% for i, emoji in [(1,'😔'),(2,'😕'),(3,'😐'),(4,'🙂'),(5,'😊')] %}
+          <div>
+            <input type="radio" class="btn-check" name="mood" id="m{{ i }}" value="{{ i }}" required>
+            <label class="btn btn-outline-secondary" for="m{{ i }}" style="font-size:1.4rem;padding:.4rem .7rem;">{{ emoji }}</label>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="d-flex justify-content-between text-muted mt-1" style="font-size:.7rem;">
+          <span>Very Low</span><span>Low</span><span>Okay</span><span>Good</span><span>Great</span>
+        </div>
+      </div>
+      <div class="d-flex gap-2">
+        <input type="text" name="note" class="form-control form-control-sm" placeholder="Optional note (private)">
+        <button type="submit" class="btn btn-teal btn-sm px-3">Log</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-lightning me-2" style="color:var(--tq);"></i>Quick Actions</h6>
+        <div class="d-grid gap-2">
+          <a href="/chat" class="btn btn-teal btn-sm text-start px-3"><i class="bi bi-chat-heart me-2"></i>Talk to TranquilBot</a>
+          <a href="/appointments" class="btn btn-outline-secondary btn-sm text-start px-3"><i class="bi bi-calendar-plus me-2"></i>Book Counsellor</a>
+          <a href="/forum" class="btn btn-outline-secondary btn-sm text-start px-3"><i class="bi bi-people me-2"></i>Peer Forum</a>
+          <a href="/exercises" class="btn btn-outline-secondary btn-sm text-start px-3"><i class="bi bi-activity me-2"></i>My Exercises</a>
+          <a href="/resources" class="btn btn-outline-secondary btn-sm text-start px-3"><i class="bi bi-collection me-2"></i>Resource Hub</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <h6 class="fw-semibold mb-3"><i class="bi bi-graph-up me-2" style="color:var(--tq);"></i>Recent Mood</h6>
+        {% if mood_logs %}
+        <div class="d-flex gap-1 flex-wrap">
+          {% for log in mood_logs %}
+          {% set em = {1:'😔',2:'😕',3:'😐',4:'🙂',5:'😊'} %}
+          <span class="badge badge-teal px-2 py-1">{{ em[log.mood] }} {{ log.logged_at[:10] }}</span>
+          {% endfor %}
+        </div>
+        {% else %}<p class="text-muted small">No mood logs yet.</p>{% endif %}
+      </div>
+    </div>
+  </div>
+
+  {% if exercises %}
+  <div class="card p-3 mb-4">
+    <h6 class="fw-semibold mb-3"><i class="bi bi-activity me-2" style="color:var(--tq);"></i>Recommended Exercises</h6>
+    <div class="row g-2">
+      {% for ex in exercises %}
+      <div class="col-md-6">
+        <div class="p-2 rounded" style="background:#f8fafb;border:1px solid #eee;">
+          <div class="d-flex justify-content-between">
+            <span class="fw-semibold small">{{ ex.title }}</span>
+            <span class="badge badge-teal" style="font-size:.65rem;">{{ ex.category }}</span>
+          </div>
+          <p class="text-muted small mb-0 mt-1">{{ ex.description[:80] }}...</p>
+          <div class="text-muted" style="font-size:.72rem;">by {{ ex.c_name }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <a href="/exercises" class="small mt-2 d-inline-block text-decoration-none" style="color:var(--tq);">View all exercises →</a>
+  </div>
+  {% endif %}
+
+  <div class="card p-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="fw-semibold mb-0"><i class="bi bi-calendar-check me-2" style="color:var(--tq);"></i>Recent Appointments</h6>
+      <a href="/appointments" class="btn btn-teal btn-sm px-3">Book New</a>
+    </div>
+    {% if appointments %}
+    <div class="table-responsive">
+      <table class="table table-sm table-hover mb-0">
+        <thead class="table-light"><tr><th>Counsellor</th><th>Date</th><th>Status</th><th>Action</th></tr></thead>
+        <tbody>
+          {% for a in appointments %}
+          <tr>
+            <td style="font-size:.85rem;">{{ a.c_name or a.counsellor_name or '—' }}</td>
+            <td style="font-size:.85rem;">{{ a.preferred_date }}</td>
+            <td>
+              {% if a.status=='pending' %}<span class="badge bg-warning text-dark">Pending</span>
+              {% elif a.status=='confirmed' %}<span class="badge bg-success">Confirmed</span>
+              {% elif a.status=='completed' %}<span class="badge bg-secondary">Completed</span>
+              {% else %}<span class="badge bg-danger">{{ a.status|capitalize }}</span>{% endif %}
+            </td>
+            <td>
+              {% if a.status=='completed' and a.counsellor_id %}
+              <a href="/counsellor/{{ a.counsellor_id }}/review" class="btn btn-sm badge-teal px-2 py-0" style="font-size:.75rem;">Review</a>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}<p class="text-muted small mb-0">No appointments yet. <a href="/appointments" style="color:var(--tq);">Book one</a></p>{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

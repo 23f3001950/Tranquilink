@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% block title %}· Emergency Appointments{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h4 class="fw-bold mb-1" style="color:#1d3557;"><i class="bi bi-exclamation-circle me-2 text-danger"></i>Emergency Appointments</h4>
+  <p class="text-muted small mb-4">Create and manage urgent cases that require immediate attention.</p>
+  <div class="row g-4">
+    <div class="col-md-5">
+      <div class="card p-3 mb-3" style="background:#fff5f5;border-color:#fca5a5;">
+        <h6 class="fw-semibold mb-3 text-danger"><i class="bi bi-plus-circle me-2"></i>Create Emergency Appointment</h6>
+        <form method="POST">
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Student</label>
+            <select name="student_id" class="form-select form-select-sm" required>
+              <option value="">Select student</option>
+              {% for s in students %}
+              <option value="{{ s.id }}">{{ s.username }} ({{ s.email }})</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-2">
+            <label class="form-label small fw-semibold">Reason / Crisis Type</label>
+            <select name="reason" class="form-select form-select-sm" required>
+              <option value="">Select reason</option>
+              {% for r in ['Suicidal ideation','Self-harm risk','Severe panic attack','Acute depression episode','Trauma response','Substance abuse concern','Other crisis'] %}
+              <option>{{ r }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label small fw-semibold">Notes</label>
+            <textarea name="notes" class="form-control form-control-sm" rows="2" placeholder="Brief notes on the situation..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-danger btn-sm w-100">Create Emergency Appointment</button>
+        </form>
+      </div>
+      <div class="card p-3" style="background:#fff3cd;border-color:#ffe082;">
+        <h6 class="fw-semibold mb-2" style="font-size:.85rem;"><i class="bi bi-telephone me-2 text-warning"></i>Crisis Escalation</h6>
+        <p class="text-muted small mb-1">If the student is in immediate danger:</p>
+        <ul class="small text-muted mb-0 ps-3">
+          <li>iCall: <strong>9152987821</strong></li>
+          <li>Vandrevala: <strong>1860-2662-345</strong></li>
+          <li>NIMHANS: <strong>080-46110007</strong></li>
+          <li>Emergency: <strong>112</strong></li>
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-7">
+      <h6 class="fw-semibold mb-3 text-muted">Active Emergency Cases</h6>
+      {% if emergencies %}
+      <div class="d-flex flex-column gap-2">
+        {% for e in emergencies %}
+        <div class="card p-3 {% if e.status=='open' %}border-danger{% endif %}">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <div class="fw-semibold small">{{ e.username }}</div>
+              <div class="text-muted small">{{ e.reason }}</div>
+              {% if e.notes %}<div class="text-muted" style="font-size:.75rem;">{{ e.notes }}</div>{% endif %}
+              <div class="text-muted" style="font-size:.72rem;"><i class="bi bi-clock me-1"></i>{{ e.created_at[:16] }}</div>
+            </div>
+            <div class="d-flex flex-column gap-1 align-items-end">
+              <span class="badge {% if e.status=='open' %}bg-danger{% else %}bg-secondary{% endif %}">{{ e.status|capitalize }}</span>
+              {% if e.status=='open' %}
+              <form method="POST" action="/counsellor/emergency/{{ e.id }}/close">
+                <button type="submit" class="btn btn-sm btn-outline-secondary px-2" style="font-size:.72rem;">Close</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <div class="text-center py-4 text-muted">
+        <i class="bi bi-check-circle" style="font-size:2rem;color:#2a9d8f;"></i>
+        <p class="mt-2 small">No emergency cases. Good sign!</p>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

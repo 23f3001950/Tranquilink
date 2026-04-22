@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+{% block title %}· Counsellor Dashboard{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h4 class="fw-bold mb-0" style="color:#1d3557;">Welcome, {{ session.username }} 👋</h4>
+      <p class="text-muted small mb-0">Counsellor Dashboard</p>
+    </div>
+    <div class="d-flex gap-2 align-items-center">
+      {% if stats and stats.cnt > 0 %}
+      <span class="badge badge-teal px-3 py-2">
+        <i class="bi bi-star-fill me-1" style="color:#e9c46a;"></i>{{ "%.1f"|format(stats.avg) }} ({{ stats.cnt }} reviews)
+      </span>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Stats Row -->
+  <div class="row g-3 mb-4">
+    {% for icon, label, val, color in [
+      ('bi-calendar-check','Pending Appts', pending|length, '#e9c46a'),
+      ('bi-exclamation-circle','Open Emergencies', emergency|selectattr('status','equalto','open')|list|length, '#e76f51'),
+      ('bi-star','Total Reviews', stats.cnt if stats else 0, '#2a9d8f'),
+      ('bi-activity','Exercises Added', exercises|length, '#1d3557'),
+    ] %}
+    <div class="col-md-3">
+      <div class="card p-3 text-center">
+        <i class="bi {{ icon }} mb-1" style="font-size:1.5rem;color:{{ color }};"></i>
+        <div class="fw-bold fs-4">{{ val }}</div>
+        <div class="text-muted" style="font-size:.75rem;">{{ label }}</div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="row g-3">
+    <!-- Pending appointments -->
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <h6 class="fw-semibold mb-0"><i class="bi bi-clock me-2" style="color:var(--tq);"></i>Pending Appointments</h6>
+          <a href="/counsellor/appointments" class="btn btn-teal btn-sm px-2" style="font-size:.75rem;">View All</a>
+        </div>
+        {% if pending %}
+        {% for a in pending[:4] %}
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <div>
+            <div class="fw-semibold small">{% if a.is_anonymous %}Anonymous{% else %}{{ a.username }}{% endif %}</div>
+            <div class="text-muted" style="font-size:.75rem;">{{ a.preferred_date }} · {{ a.preferred_time }}</div>
+          </div>
+          <span class="badge bg-warning text-dark">Pending</span>
+        </div>
+        {% endfor %}
+        {% else %}<p class="text-muted small mb-0">No pending appointments.</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Emergency appointments -->
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <h6 class="fw-semibold mb-0"><i class="bi bi-exclamation-circle me-2 text-danger"></i>Emergency Cases</h6>
+          <a href="/counsellor/emergency" class="btn btn-sm btn-outline-danger px-2" style="font-size:.75rem;">Manage</a>
+        </div>
+        {% if emergency %}
+        {% for e in emergency[:4] %}
+        <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+          <div>
+            <div class="fw-semibold small">{{ e.username }}</div>
+            <div class="text-muted" style="font-size:.75rem;">{{ (e.reason or 'No reason given')[:50] }}</div>
+          </div>
+          <span class="badge {% if e.status=='open' %}bg-danger{% else %}bg-secondary{% endif %}">{{ e.status|capitalize }}</span>
+        </div>
+        {% endfor %}
+        {% else %}<p class="text-muted small mb-0">No emergency cases.</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Recent Reviews -->
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <h6 class="fw-semibold mb-0"><i class="bi bi-star me-2" style="color:#e9c46a;"></i>Recent Reviews</h6>
+          <a href="/counsellor/reviews" class="btn btn-teal btn-sm px-2" style="font-size:.75rem;">All Reviews</a>
+        </div>
+        {% if reviews %}
+        {% for r in reviews[:3] %}
+        <div class="py-2 border-bottom">
+          <div class="d-flex justify-content-between">
+            <span class="small fw-semibold">{{ r.username }}</span>
+            <span>{% for i in range(r.rating) %}⭐{% endfor %}</span>
+          </div>
+          {% if r.review_text %}<p class="text-muted small mb-0">{{ r.review_text[:80] }}{% if r.review_text|length > 80 %}...{% endif %}</p>{% endif %}
+        </div>
+        {% endfor %}
+        {% else %}<p class="text-muted small mb-0">No reviews yet.</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Recent Exercises -->
+    <div class="col-md-6">
+      <div class="card p-3 h-100">
+        <div class="d-flex justify-content-between mb-3">
+          <h6 class="fw-semibold mb-0"><i class="bi bi-activity me-2" style="color:var(--tq);"></i>Recent Exercises</h6>
+          <a href="/counsellor/exercises" class="btn btn-teal btn-sm px-2" style="font-size:.75rem;">Manage</a>
+        </div>
+        {% if exercises %}
+        {% for ex in exercises %}
+        <div class="d-flex justify-content-between py-1 border-bottom">
+          <span class="small">{{ ex.title }}</span>
+          <span class="badge badge-teal" style="font-size:.65rem;">{{ ex.category }}</span>
+        </div>
+        {% endfor %}
+        {% else %}<p class="text-muted small mb-0">No exercises added yet.</p>{% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

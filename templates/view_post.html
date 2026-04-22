@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}· Forum Post{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:750px;">
+  <a href="/forum" class="text-decoration-none text-muted small mb-3 d-inline-block"><i class="bi bi-arrow-left me-1"></i>Back to Forum</a>
+  <div class="card p-4 mb-3">
+    <div class="d-flex gap-2 mb-2 flex-wrap">
+      <span class="badge badge-teal">{{ post.category }}</span>
+      {% if post.anonymous %}<span class="text-muted small"><i class="bi bi-incognito me-1"></i>Anonymous</span>
+      {% else %}<span class="text-muted small"><i class="bi bi-person me-1"></i>{{ post.username }}</span>{% endif %}
+      <span class="text-muted small"><i class="bi bi-clock me-1"></i>{{ post.created_at[:16] }}</span>
+    </div>
+    <h5 class="fw-bold mb-3" style="color:#1d3557;">{{ post.title }}</h5>
+    <p class="mb-0" style="line-height:1.7;">{{ post.content }}</p>
+  </div>
+  <h6 class="fw-semibold mb-2 text-muted">{{ replies|length }} Repl{{ 'y' if replies|length==1 else 'ies' }}</h6>
+  {% for r in replies %}
+  <div class="card p-3 mb-2 {% if r.is_counsellor %}border-start border-3{% endif %}" style="{% if r.is_counsellor %}border-color:var(--tq)!important;{% endif %}">
+    <div class="d-flex gap-2 mb-1 flex-wrap">
+      {% if r.is_counsellor %}<span class="badge badge-teal"><i class="bi bi-person-badge me-1"></i>Counsellor</span>{% endif %}
+      <span class="text-muted small"><i class="bi bi-person me-1"></i>{{ r.display_name }}</span>
+      <span class="text-muted small">{{ r.created_at[:16] }}</span>
+    </div>
+    <p class="mb-0 small" style="line-height:1.6;">{{ r.content }}</p>
+  </div>
+  {% else %}<p class="text-muted small">No replies yet.</p>{% endfor %}
+  <div class="card p-3 mt-3">
+    <h6 class="fw-semibold mb-3">Add a Reply</h6>
+    <form method="POST">
+      <div class="mb-3"><textarea name="content" class="form-control" rows="3" required placeholder="Share support or your experience..."></textarea></div>
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-teal px-4">Post Reply</button>
+        <a href="/forum" class="btn btn-outline-secondary">Back</a>
+      </div>
+    </form>
+    {% if session.role=='counsellor' %}<p class="text-muted small mt-2 mb-0"><i class="bi bi-person-badge me-1" style="color:var(--tq);"></i>Your reply will be marked as a Counsellor response.</p>{% endif %}
+  </div>
+</div>
+{% endblock %}
